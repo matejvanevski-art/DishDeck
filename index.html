@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="DishDeck helps you discover, search, and save recipes from around the world."
+    />
+    <meta name="theme-color" content="#f7f5f0" />
+    <title>DishDeck — Discover your next meal</title>
+    <script>
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
+
+        if (redirect) {
+          const safePath = redirect.startsWith('/') ? redirect : `/${redirect}`;
+          window.history.replaceState(null, '', `/PROJECT${safePath}`);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting to DishDeck</title>
+    <script>
+      (function () {
+        const basePath = '/PROJECT';
+        const currentPath = window.location.pathname.startsWith(basePath)
+          ? window.location.pathname.slice(basePath.length)
+          : window.location.pathname;
+        const redirectPath = `${currentPath}${window.location.search}${window.location.hash}`;
+        window.location.replace(
+          `${basePath}/?redirect=${encodeURIComponent(redirectPath)}`
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to DishDeck...</p>
+  </body>
+</html>
