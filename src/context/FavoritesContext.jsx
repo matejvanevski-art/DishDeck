@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useCallback,
@@ -6,9 +5,9 @@ import {
   useEffect,
   useMemo,
   useReducer,
-} from 'react';
-import { FAVORITES_STORAGE_KEY } from '../constants/app';
-import AuthContext from './AuthContext';
+} from "react";
+import { FAVORITES_STORAGE_KEY } from "../constants/app";
+import AuthContext from "./AuthContext";
 
 const FavoritesContext = createContext(null);
 
@@ -30,36 +29,32 @@ const initialState = {
 
 function favoritesReducer(state, action) {
   switch (action.type) {
-    case 'SET_FAVORITES':
+    case "SET_FAVORITES":
       return {
         storageKey: action.storageKey,
         favorites: action.payload,
       };
 
-    case 'TOGGLE_FAVORITE': {
+    case "TOGGLE_FAVORITE": {
       const alreadySaved = state.favorites.some(
-        (meal) => meal.id === action.payload.id
+        (meal) => meal.id === action.payload.id,
       );
 
       return {
         ...state,
         favorites: alreadySaved
-          ? state.favorites.filter(
-              (meal) => meal.id !== action.payload.id
-            )
+          ? state.favorites.filter((meal) => meal.id !== action.payload.id)
           : [...state.favorites, action.payload],
       };
     }
 
-    case 'REMOVE_FAVORITE':
+    case "REMOVE_FAVORITE":
       return {
         ...state,
-        favorites: state.favorites.filter(
-          (meal) => meal.id !== action.payload
-        ),
+        favorites: state.favorites.filter((meal) => meal.id !== action.payload),
       };
 
-    case 'CLEAR_FAVORITES':
+    case "CLEAR_FAVORITES":
       return { ...state, favorites: [] };
 
     default:
@@ -74,15 +69,12 @@ export function FavoritesProvider({ children }) {
     ? `${FAVORITES_STORAGE_KEY}-${user.email.toLowerCase()}`
     : null;
 
-  const [state, dispatch] = useReducer(
-    favoritesReducer,
-    initialState
-  );
+  const [state, dispatch] = useReducer(favoritesReducer, initialState);
 
   // Load favorites whenever the logged-in account changes.
   useEffect(() => {
     dispatch({
-      type: 'SET_FAVORITES',
+      type: "SET_FAVORITES",
       storageKey,
       payload: readInitialFavorites(storageKey),
     });
@@ -93,41 +85,43 @@ export function FavoritesProvider({ children }) {
     if (!storageKey || state.storageKey !== storageKey) return;
 
     try {
-      window.localStorage.setItem(
-        storageKey,
-        JSON.stringify(state.favorites)
-      );
+      window.localStorage.setItem(storageKey, JSON.stringify(state.favorites));
     } catch {
       // Keep in-memory favorites available if storage is unavailable.
     }
   }, [state.favorites, state.storageKey, storageKey]);
 
   const toggleFavorite = useCallback((meal) => {
-    dispatch({ type: 'TOGGLE_FAVORITE', payload: meal });
+    dispatch({ type: "TOGGLE_FAVORITE", payload: meal });
   }, []);
 
   const removeFavorite = useCallback((mealId) => {
-    dispatch({ type: 'REMOVE_FAVORITE', payload: mealId });
+    dispatch({ type: "REMOVE_FAVORITE", payload: mealId });
   }, []);
 
   const clearFavorites = useCallback(() => {
-    dispatch({ type: 'CLEAR_FAVORITES' });
+    dispatch({ type: "CLEAR_FAVORITES" });
   }, []);
 
-  const favorites =
-    user && state.storageKey === storageKey
-      ? state.favorites
-      : [];
+  const value = useMemo(() => {
+    const favorites =
+      user && state.storageKey === storageKey ? state.favorites : [];
 
-  const value = useMemo(
-    () => ({
+    return {
       favorites,
       toggleFavorite,
       removeFavorite,
       clearFavorites,
-    }),
-    [favorites, toggleFavorite, removeFavorite, clearFavorites]
-  );
+    };
+  }, [
+    user,
+    state.storageKey,
+    storageKey,
+    state.favorites,
+    toggleFavorite,
+    removeFavorite,
+    clearFavorites,
+  ]);
 
   return (
     <FavoritesContext.Provider value={value}>
@@ -141,7 +135,7 @@ export function useFavorites() {
   const context = useContext(FavoritesContext);
 
   if (!context) {
-    throw new Error('useFavorites must be used within a FavoritesProvider');
+    throw new Error("useFavorites must be used within a FavoritesProvider");
   }
 
   return context;

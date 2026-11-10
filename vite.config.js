@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const repositoryName = 'PROJECT';
+const repositoryName = 'DishDeck';
 
 export default defineConfig({
   plugins: [react()],

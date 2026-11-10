@@ -1,9 +1,11 @@
+
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import MealCard from '../MealCard';
 import { FavoritesProvider } from '../../context/FavoritesContext';
+import AuthContext from '../../context/AuthContext';
 
 const sampleMeal = {
   id: '52772',
@@ -16,9 +18,11 @@ const sampleMeal = {
 function renderMealCard() {
   return render(
     <MemoryRouter>
-      <FavoritesProvider>
-        <MealCard meal={sampleMeal} />
-      </FavoritesProvider>
+      <AuthContext.Provider value={{ user: { email: 'test@example.com' } }}>
+        <FavoritesProvider>
+          <MealCard meal={sampleMeal} />
+        </FavoritesProvider>
+      </AuthContext.Provider>
     </MemoryRouter>
   );
 }

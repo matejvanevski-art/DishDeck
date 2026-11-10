@@ -33,7 +33,6 @@ const INSPIRATIONS = [
 function HomePage() {
   const navigate = useNavigate();
   const [inspirationIndex, setInspirationIndex] = useState(0);
-  const [displayedMeals, setDisplayedMeals] = useState([]);
 
   const inspiration = INSPIRATIONS[inspirationIndex];
 
@@ -52,21 +51,14 @@ function HomePage() {
 
   const { data, loading, error, refetch } = useApi(requestFeaturedMeals);
 
-  const meals = useMemo(() => normalizeMeals(data?.meals), [data]);
-
-  // Keep the previous recipes visible while the next category loads.
-  useEffect(() => {
-    if (!loading && !error) {
-      setDisplayedMeals(meals.slice(0, 6));
-    }
-  }, [loading, error, meals]);
+  const meals = useMemo(() => normalizeMeals(data?.meals).slice(0, 6), [data]);
 
   const handleSearch = useCallback(
     (query) => navigate(`/search?q=${encodeURIComponent(query)}`),
     [navigate],
   );
 
-  const mealsKey = displayedMeals.map((meal) => meal.id).join("-");
+  const mealsKey = meals.map((meal) => meal.id).join("-");
 
   return (
     <>
@@ -106,15 +98,15 @@ function HomePage() {
           </Link>
         </div>
 
-        {loading && displayedMeals.length === 0 && (
+        {loading && meals.length === 0 && (
           <LoadingState message={`Finding ${inspiration.query} recipes...`} />
         )}
 
-        {error && displayedMeals.length === 0 && (
+        {error && meals.length === 0 && (
           <ErrorState message={error} onRetry={refetch} />
         )}
 
-        {displayedMeals.length > 0 && (
+        {meals.length > 0 && (
           <>
             {loading && (
               <p className="inspiration-status" role="status">
@@ -122,7 +114,7 @@ function HomePage() {
               </p>
             )}
             <div key={mealsKey} className="inspiration-meals">
-              <MealList meals={displayedMeals} />
+              <MealList meals={meals} />
             </div>
             {error && (
               <p className="inspiration-status" role="status">
@@ -132,7 +124,7 @@ function HomePage() {
           </>
         )}
 
-        {!loading && !error && displayedMeals.length === 0 && (
+        {!loading && !error && meals.length === 0 && (
           <EmptyState title="No featured recipes found" />
         )}
       </section>
